@@ -56,8 +56,6 @@ for x in range(6):
             partido = line.split(" ")
             datos[partido[0][0:len(partido[0])-1]]=str(i) + ";" + partido[0][0:len(partido[0])-1] + ";" + partido[1] + ";" + partido[2] + ";" + partido[3] + ";" + partido[4]
 
-            # resultado = str(i) + ";" + partido[0][0:len(partido[0])-1] + ";" + partido[1] + ";" + partido[2] + ";" + partido[3] + ";" + partido[4]
-            # f.write(resultado + "\n")
             i += 1
 
     print("Ok read partial "+ COUNTRIES[x])
@@ -67,8 +65,6 @@ with open(USERSSPAIN, "r") as reader:
         partido = line.split(" ")
         datos[partido[0][0:len(partido[0])-1]]=str(i) + ";" + partido[0][0:len(partido[0])-1] + ";" + pais + ";" + partido[1] + ";" + partido[2] + ";" + partido[3]
 
-        # resultado = str(i) + ";" + partido[0][0:len(partido[0])-1] + ";" + pais + ";" + partido[1] + ";" + partido[2] + ";" + partido[3]
-        # f.write(resultado + "\n")
         i += 1
 
 print("Ok read partial "+ pais)
