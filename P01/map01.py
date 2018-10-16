@@ -4,20 +4,21 @@
 import os
 import csv
 
-USERSSPAIN = 'P01/material p1/twitter/Top100_spain_friendships_users.txt'
-CSVUSERSSPAIN = 'P01/usuariosSpain.csv'
-USERSUK = 'P01/material p1/twitter/Top100_united_kingdom_friendships_users.txt'
-CSVUSERSUK = 'P01/usuariosUK.csv'
+USERSSPAIN = \
+    'twitter/Top100_spain_friendships_users.txt'
+CSVUSERSSPAIN = 'usuariosSpain.csv'
+USERSUK = 'twitter/Top100_united_kingdom_friendships_users.txt'
+CSVUSERSUK = 'usuariosUK.csv'
 
 USERS = [
-    'P01/material p1/twitter/Top100_france_friendships_users.txt',
-    'P01/material p1/twitter/Top100_germany_friendships_users.txt',
-    'P01/material p1/twitter/Top100_global_friendships_users.txt',
-    'P01/material p1/twitter/Top100_italy_friendships_users.txt',
-    'P01/material p1/twitter/Top100_united_kingdom_friendships_users.txt',
-    'P01/material p1/twitter/Top100_united_states_friendships_users.txt',
+    'twitter/Top100_france_friendships_users.txt',
+    'twitter/Top100_germany_friendships_users.txt',
+    'twitter/Top100_global_friendships_users.txt',
+    'twitter/Top100_italy_friendships_users.txt',
+    'twitter/Top100_united_kingdom_friendships_users.txt',
+    'twitter/Top100_united_states_friendships_users.txt',
     ]
-CSVGLOBAL = 'P01/usuariosGlobal.csv'
+CSVGLOBAL = 'usuariosGlobal.csv'
 COUNTRIES = [
     'France',
     'Germany',

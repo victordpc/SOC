@@ -4,11 +4,11 @@
 import os
 import csv
 
-USERS = ['P01/material p1/twitter/Top100_spain_friendships.txt',
-         'P01/material p1/twitter/Top100_united_kingdom_friendships.txt'
+USERS = ['twitter/Top100_spain_friendships.txt',
+         'twitter/Top100_united_kingdom_friendships.txt'
          ]
-CSVUSERS = ['P01/usuariosSpain.csv', 'P01/usuariosUK.csv']
-CSVFRIENDS = ['P01/seguidoresSpain.csv', 'P01/seguidoresUK.csv']
+CSVUSERS = ['usuariosSpain.csv', 'usuariosUK.csv']
+CSVFRIENDS = ['seguidoresSpain.csv', 'seguidoresUK.csv']
 
 SEPARATOR = ','
 
@@ -48,21 +48,19 @@ for x in range(2):
     f.close()
     print 'Ok ' + CSVFRIENDS[x]
 
-USERS = ['P01/material p1/twitter/Top100_spain_friendships.txt',
-         'P01/material p1/twitter/Top100_united_kingdom_friendships.txt'
-         ]
-CSVUSERS = ['P01/usuariosSpain.csv', 'P01/usuariosUK.csv']
-CSVFRIENDS = ['P01/seguidoresSpain.csv', 'P01/seguidoresUK.csv']
-
-USERSGLOBAL = ['P01/material p1/twitter/Top100_france_friendships.txt',
-               'P01/material p1/twitter/Top100_germany_friendships.txt'
-               , 'P01/material p1/twitter/Top100_global_friendships.txt'
-               , 'P01/material p1/twitter/Top100_italy_friendships.txt',
-               'P01/material p1/twitter/Top100_united_states_friendships.txt'
+USERSGLOBAL = ['twitter/Top100_france_friendships.txt',
+               'twitter/Top100_germany_friendships.txt',
+               'twitter/Top100_global_friendships.txt', 
+               'twitter/Top100_italy_friendships.txt',
+               'twitter/Top100_united_states_friendships.txt',
+               'twitter/Top100_spain_friendships.txt',
+               'twitter/Top100_united_kingdom_friendships.txt'
                ]
-CSVGLOBAL = 'P01/usuariosGlobal.csv'
-COUNTRIES = ['France', 'Germany', 'Global', 'Italy', 'US']
-CSVFRIENDSGLOBAL = 'P01/seguidoresSpain.csv'
+CSVGLOBAL = 'usuariosGlobal.csv'
+COUNTRIES = ['France', 'Germany', 'Global', 'Italy', 'US','Spain','UK']
+CSVFRIENDSGLOBAL = 'seguidoresGlobal.csv'
+
+
 
 print 'Ok All'
 
