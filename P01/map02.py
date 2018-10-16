@@ -7,9 +7,9 @@ USERS = ["P01/material p1/twitter/Top100_spain_friendships.txt", "P01/material p
 CSVUSERS = ["P01/usuariosSpain.csv", "P01/usuariosUK.csv"]
 CSVFRIENDS = ["P01/seguidoresSpain.csv", "P01/seguidoresUK.csv"]
 
+SEPARATOR =","
 
-
-CABECERA= "Source;Target;Type;Id;Label;Weight"
+CABECERA= "Source"+ SEPARATOR +"Target"+ SEPARATOR +"Type"+ SEPARATOR +"Id"+ SEPARATOR +"Label"+ SEPARATOR +"Weight"
 TYPE="Directed"
 LABEL=""
 WEIGHT="1.0"
@@ -20,7 +20,7 @@ for x in range(2):
     datos =dict()
     with open(CSVUSERS[x], "r") as reader:
         for line in reader:
-            partido = line.split(";")
+            partido = line.split(SEPARATOR)
             datos[partido[1]] = partido[0]
 
     i=0
@@ -32,11 +32,11 @@ for x in range(2):
             partido = line.split(":")
             idDestino = datos[partido[0]]
             
-            for x in partido[1].strip().split(" "): 
-                if x != "":
-                    idOrigen= datos[x]
+            for dato in partido[1].strip().split(" "): 
+                if dato != "":
+                    idOrigen= datos[dato]
                     i += 1
-                    f.write(str(idOrigen) + ";" + str(idDestino) + ";" + TYPE + ";" + str(i) + ";" + LABEL + ";" + WEIGHT + "\n")
+                    f.write(str(idOrigen) + SEPARATOR+ str(idDestino) + SEPARATOR+ TYPE + SEPARATOR+ str(i) + SEPARATOR+ LABEL + SEPARATOR+ WEIGHT + "\n")
 
     f.close()
     print("Ok " + CSVFRIENDS[x])
