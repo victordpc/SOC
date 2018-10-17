@@ -17,7 +17,7 @@ USERS = [
     'twitter/Top100_italy_friendships_users.txt',
     'twitter/Top100_united_kingdom_friendships_users.txt',
     'twitter/Top100_united_states_friendships_users.txt',
-    ]
+]
 CSVGLOBAL = 'usuariosGlobal.csv'
 COUNTRIES = [
     'France',
@@ -26,7 +26,7 @@ COUNTRIES = [
     'Italy',
     'UK',
     'US',
-    ]
+]
 
 SEPARATOR = ','
 
@@ -34,7 +34,7 @@ CABECERA = 'Id' + SEPARATOR + 'Label' + SEPARATOR + 'Country' \
     + SEPARATOR + 'Following' + SEPARATOR + 'Followers' + SEPARATOR \
     + 'Tweets'
 
-pais = 'Spain'
+pais = 'spain'
 i = 0
 f = open(CSVUSERSSPAIN, 'w')
 
