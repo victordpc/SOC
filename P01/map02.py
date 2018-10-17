@@ -19,36 +19,6 @@ TYPE = 'Directed'
 LABEL = ''
 WEIGHT = '1.0'
 
-localDirectory = os.path.dirname(os.path.realpath(__file__))
-
-for x in range(2):
-    datos = dict()
-    with open(CSVUSERS[x], 'r') as reader:
-        for line in reader:
-            partido = line.split(SEPARATOR)
-            datos[partido[1]] = partido[0]
-
-    i = 0
-    f = open(CSVFRIENDS[x], 'w')
-    f.write(CABECERA + '\n')
-
-    with open(USERS[x], 'r') as reader:
-        for line in reader:
-            partido = line.split(':')
-            idDestino = datos[partido[0]]
-
-            for dato in partido[1].strip().split(' '):
-                if dato != '':
-                    idOrigen = datos[dato]
-                    i += 1
-                    f.write(
-                        str(idOrigen) + SEPARATOR + str(idDestino) +
-                        SEPARATOR + TYPE + SEPARATOR + str(i) + SEPARATOR +
-                        LABEL + SEPARATOR + WEIGHT + '\n')
-
-    f.close()
-    print 'Ok ' + CSVFRIENDS[x]
-
 USERSGLOBAL = [
     'twitter/Top100_france_friendships.txt',
     'twitter/Top100_germany_friendships.txt',
@@ -70,61 +40,106 @@ CABECERAPAISES = 'Id' + SEPARATOR + 'Label'
 CSVCOUNTRIES = 'usuariosPaises.csv'
 CSVCOUNTRIESGLOBAL = 'seguidoresPaises.csv'
 
-resultado = dict()
-datos = dict()
-datosUsuariosPaises = dict()
-paises = dict()
-datosAristasPaises = dict()
+for x in range(2):
+    datos = dict()
 
-with open(CSVGLOBAL, 'r') as reader:
-    for line in reader:
-        partido = line.split(SEPARATOR)
-        datos[partido[1]] = partido[0]
-        datosUsuariosPaises[partido[1]] = partido[2]
+    # Lee los datos de los usuarios desde csv previamente procesados
+    with open(CSVUSERS[x], 'r') as reader:
+        for line in reader:
+            partido = line.split(SEPARATOR)
+            datos[partido[1]] = partido[0]
 
-f = open(CSVCOUNTRIES, 'w')
-f.write(CABECERAPAISES + '\n')
+    # Escribe los datos de los usuarios en los ficheros indicados
+    i = 0
+    f = open(CSVFRIENDS[x], 'w')
+    f.write(CABECERA + '\n')
 
-for z in range(7):
-    paises[COUNTRIES[z].capitalize()] = z
-    f.write(str(z) + SEPARATOR + COUNTRIES[z].capitalize() + '\n')
-
-f.close()
-
-f = open(CSVFRIENDSGLOBAL, 'w')
-f.write(CABECERA + '\n')
-
-h = open(CSVFRIENDSINTERNACIONAL, 'w')
-h.write(CABECERA + '\n')
-
-i = 0
-for y in range(7):
-    with open(USERSGLOBAL[y], 'r') as reader:
+    with open(USERS[x], 'r') as reader:
         for line in reader:
             partido = line.split(':')
             idDestino = datos[partido[0]]
 
-            idPaisDestino = paises[datosUsuariosPaises[partido[0]].
-                                   capitalize()]
-
             for dato in partido[1].strip().split(' '):
                 if dato != '':
                     idOrigen = datos[dato]
-
-                    idPaisOrigen = paises[datosUsuariosPaises[dato].
-                                          capitalize()]
                     i += 1
                     f.write(
                         str(idOrigen) + SEPARATOR + str(idDestino) +
                         SEPARATOR + TYPE + SEPARATOR + str(i) + SEPARATOR +
                         LABEL + SEPARATOR + WEIGHT + '\n')
 
+    f.close()
+
+    print 'Ok ' + CSVFRIENDS[x]
+
+resultado = dict()
+datosUsuarios = dict()
+datosUsuariosPaises = dict()
+paises = dict()
+datosAristasPaises = dict()
+
+# Lee los datos de los usuarios globales previamente procesados
+with open(CSVGLOBAL, 'r') as reader:
+    for line in reader:
+        partido = line.split(SEPARATOR)
+        datosUsuarios[partido[1]] = partido[0]
+        datosUsuariosPaises[partido[1]] = partido[2]
+
+# Carga un diccionario con los paises que vamos a tratar y genera el csv para los
+# nodos de los paises
+f = open(CSVCOUNTRIES, 'w')
+f.write(CABECERAPAISES + '\n')
+for z in range(7):
+    paises[COUNTRIES[z].capitalize()] = z
+    f.write(str(z) + SEPARATOR + COUNTRIES[z].capitalize() + '\n')
+f.close()
+
+# Procesamos los datos para escribir los Csv de las aristas de los usuarios globales,
+# los usuarios globales internacionales y procesar las relaciones entre los paises en conjunto
+f = open(CSVFRIENDSGLOBAL, 'w')
+f.write(CABECERA + '\n')
+h = open(CSVFRIENDSINTERNACIONAL, 'w')
+h.write(CABECERA + '\n')
+
+i = 0
+
+# Procesamos los siete origenes de datos disponibles
+for y in range(7):
+    with open(USERSGLOBAL[y], 'r') as reader:
+        for line in reader:
+
+            # Obtenemos los identificadores del usuario y del pais
+            # al que pertenece el destino de la arista
+            partido = line.split(':')
+            idDestino = datosUsuarios[partido[0]]
+            idPaisDestino = paises[datosUsuariosPaises[partido[0]].
+                                   capitalize()]
+
+            # Recorremos el resto de usuarios relacionados con el de destino
+            for dato in partido[1].strip().split(' '):
+                if dato != '':
+                    # Obtenemos los identificadores del usuario y del pais
+                    # que marcan el origen de la arista
+                    idOrigen = datosUsuarios[dato]
+                    idPaisOrigen = paises[datosUsuariosPaises[dato].
+                                          capitalize()]
+                    i += 1
+
+                    # Escribimos en el fichero los datos de la arista del usuario
+                    f.write(
+                        str(idOrigen) + SEPARATOR + str(idDestino) +
+                        SEPARATOR + TYPE + SEPARATOR + str(i) + SEPARATOR +
+                        LABEL + SEPARATOR + WEIGHT + '\n')
+
+                    # Si los paises del origen y destino de la arista no coinciden
+                    # lo consideramos como un enlace internacional y nos gardamos los usuarios
                     if idPaisOrigen != idPaisDestino:
                         h.write(
                             str(idOrigen) + SEPARATOR + str(idDestino) +
                             SEPARATOR + TYPE + SEPARATOR + str(i) + SEPARATOR +
                             LABEL + SEPARATOR + WEIGHT + '\n')
 
+                    # Guardamos la información de la arista a nivel de paises
                     clave = str(idPaisOrigen) + '-' + str(idPaisDestino)
                     if datosAristasPaises.has_key(clave):
                         datosAristasPaises[
@@ -136,17 +151,17 @@ for y in range(7):
 
 f.close()
 
+# Guardamos la información de los enlaces entre los paises
 g = open(CSVCOUNTRIESGLOBAL, 'w')
 g.write(CABECERA + '\n')
 i = 0
-
 for arista, valor in datosAristasPaises.items():
     for nodo in arista.split('-'):
         g.write(str(nodo) + SEPARATOR)
     g.write(TYPE + SEPARATOR + str(i) + SEPARATOR + LABEL + SEPARATOR +
             str(valor) + '\n')
     i += 1
-
 g.close()
+print 'Ok write global countries'
 
 print 'Ok All'
