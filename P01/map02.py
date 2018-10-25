@@ -150,6 +150,7 @@ for y in range(7):
     print 'Ok ' + COUNTRIES[y]
 
 f.close()
+h.close()
 
 # Guardamos la información de los enlaces entre los paises
 g = open(CSVCOUNTRIESGLOBAL, 'w')
