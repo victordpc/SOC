@@ -16,8 +16,8 @@ p = float(sys.argv[2])
 PATHNODE = '%sNodes.csv'%(sys.argv[3])
 PATHEDGE = '%sEdges.csv'%(sys.argv[3])
 SEPARATOR = ','
-HEADER_NODES = 'Id' + '\n'
-HEADER_EDGE =  'Id' + SEPARATOR +'Source'+ SEPARATOR + 'Target' + '\n'
+HEADER_NODES = 'Id' + SEPARATOR + 'Label' + '\n'
+HEADER_EDGE =  'Id' + SEPARATOR + 'Source' + SEPARATOR + 'Target' + '\n'
 
 #Debug
 print 'number of nodes:%d\n ' % (nNodes)
@@ -33,7 +33,7 @@ fNode = open(PATHNODE,'w')
 fNode.write(HEADER_NODES + '\n')
 n = 0
 while n < nNodes:
-	fNode.write(str(n) + '\n')
+	fNode.write(str(n) + SEPARATOR + str(n) + '\n')
 	n += 1
 fNode.close()
 #Debug
@@ -55,5 +55,4 @@ for i in range(nNodes):
 fEdge.close()
 #Debug
 print 'Generation of the edge file: %s OK' % (PATHEDGE)
-
 
