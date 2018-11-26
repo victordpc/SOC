@@ -13,8 +13,8 @@ t = sys.argv[2]
 # m = 4
 # t = 500
 
-FICHERONODOS = 'P02/NODOS' + '_M' + str(m) + '_T' + str(t) + '.csv'
-FICHEROARISTAS = 'P02/ARISTAS' + '_M' + str(m) + '_T' + str(t) + '.csv'
+FICHERONODOS = 'P02/BA_NODOS' + '_M' + str(m) + '_T' + str(t) + '.csv'
+FICHEROARISTAS = 'P02/BA_ARISTAS' + '_M' + str(m) + '_T' + str(t) + '.csv'
 
 nodos = dict()
 aristas = dict()
