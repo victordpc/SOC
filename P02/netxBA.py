@@ -79,7 +79,7 @@ def redBA(m, t):
 
         # Nodos iniciales
         initialGraph(G, m)
-
+        
         # Recorremos todos los pasos iniciados
         for k in range(t):
             # Calculamos el nuevo nodo
