@@ -15,16 +15,17 @@ from random import randint
 
 
 def redBA(m, t):
-    if not os.path.exists(os.path.join(os.getcwd(), 'Files')):
-        os.makedirs(os.path.join(os.getcwd(), 'Files'))
+    FICHERONODOS, FICHEROARISTAS = createFiles(m, t)
 
-    FICHERONODOS = os.path.join(
-        os.getcwd(), 'Files',
-        'BA_NODOS' + '_M' + str(m) + '_T' + str(t) + '.csv')
-    FICHEROARISTAS = os.path.join(
-        os.getcwd(), 'Files',
-        'BA_ARISTAS' + '_M' + str(m) + '_T' + str(t) + '.csv')
+    nodos, aristas = calculateGraph(m, t)
 
+    print(FICHERONODOS)
+    # Sacar a fichero los datos para gephi
+    toFiles(FICHERONODOS, nodos, FICHEROARISTAS, aristas)
+
+    print(FICHEROARISTAS)
+
+def calculateGraph(m, t):
     nodos = dict()
     aristas = dict()
     sumaGrados = (m * (m + 1))
@@ -45,12 +46,19 @@ def redBA(m, t):
         sumaGrados += 2 * m
 
     print('Grafo calculado')
+    return nodos, aristas
 
-    print(FICHERONODOS)
-    # Sacar a fichero los datos para gephi
-    toFiles(FICHERONODOS, nodos, FICHEROARISTAS, aristas)
+def createFiles(m, t):
+    if not os.path.exists(os.path.join(os.getcwd(), 'Files')):
+        os.makedirs(os.path.join(os.getcwd(), 'Files'))
 
-    print(FICHEROARISTAS)
+    FICHERONODOS = os.path.join(
+        os.getcwd(), 'Files',
+        'BA_NODOS' + '_M' + str(m) + '_T' + str(t) + '.csv')
+    FICHEROARISTAS = os.path.join(
+        os.getcwd(), 'Files',
+        'BA_ARISTAS' + '_M' + str(m) + '_T' + str(t) + '.csv')
+    return FICHERONODOS, FICHEROARISTAS
 
 
 def calculateEdges(m, sumaGrados, nodos, nuevosEnlaces):
