@@ -6,7 +6,8 @@ import sys
 import netBA
 import netxBA
 
-# datosT = [1000, 500]
+# datosT = [5000]
+# datosM = [3]
 datosT = [5000, 1000, 500]
 datosM = [3, 4]
 
@@ -37,6 +38,7 @@ def crearRedBANetworkX():
         for i in range(len(datosM)):
             print('M ' + str(datosM[i]) + ' T ' + str(datosT[j]))
             print(netxBA.redBA(datosM[i], datosT[j]))
+
 
 if default:
     helpgeneradorRedesBA()
