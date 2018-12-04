@@ -5,12 +5,12 @@ import os
 import sys
 import netBA
 import netxBA
+import random_netX
 
-# datosT = [5000]
-# datosM = [3]
 datosT = [5000, 1000, 500]
 datosM = [3, 4]
-
+datosRnodos=[5000, 1000, 500]
+datosRprob=[]
 
 def helpgeneradorRedesBA():
     strHelp = 'generadorRedesBA\n'
@@ -39,6 +39,11 @@ def crearRedBANetworkX():
             print('M ' + str(datosM[i]) + ' T ' + str(datosT[j]))
             print(netxBA.redBA(datosM[i], datosT[j]))
 
+def crearRedAleatoriaNetworkX():
+    for j in range(len(datosT)):
+        for i in range(len(datosM)):
+            random_netX.redAleatoria(datosRnodos[i], datosRprob[j])
+
 
 if default:
     helpgeneradorRedesBA()
@@ -49,6 +54,9 @@ else:
 
     elif mode == 'netX':
         crearRedBANetworkX()
+
+    elif mode== 'random':
+        crearRedAleatoriaNetworkX()
 
     else:
         helpgeneradorRedesBA()
