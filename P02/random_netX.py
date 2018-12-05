@@ -7,9 +7,11 @@ import random
 import sys
 import networkx as nx
 
+
 # take second element for sort
 def takeSecond(elem):
     return elem[1]
+
 
 # Grafo inicial
 def initialGraph(G, m):
@@ -17,18 +19,26 @@ def initialGraph(G, m):
     for i in range(m + 1):
         G.add_node(i)
 
+
 # Calculamos los datos requeridos
 def calculateMetrics(G, enlaces, gradoMedio, density, hubDegree, avgDistance, clustering, componentes):
 	enlaces +=nx.number_of_edges(G)
-	gradoMedio+=nx.average_degree_connectivity(G)
+
+	Nodos,K = G.order(), G.size()
+	gradoMedio += float(K*2)/Nodos
+	
 	density += nx.density(G)
+	
 	degree_sequence = sorted(nx.degree(G), key=takeSecond, reverse=True)
 	hubDegree += degree_sequence[0][1]
-	avgDistance += nx.average_shortest_path_length(G)
+	
+	if nx.number_connected_components(G)==1:
+		avgDistance += nx.average_shortest_path_length(G)
 	clustering += nx.average_clustering(G)
 	componentes += nx.number_connected_components(G)
 
 	return enlaces,gradoMedio,density, hubDegree, avgDistance, clustering,componentes
+
 
 # Creamos las variables de resultados
 def redAleatoria(nNodes, p):
@@ -54,11 +64,10 @@ def redAleatoria(nNodes, p):
 
 		# Creamos las aristas
 		for i in range(nNodes):
-			j = i
+			j = i+1
 			while j < nNodes:
-				if(i != j):
-					if p >= random.uniform(0, 1):
-						G.add_edge(i,j)
+				if p >= random.uniform(0, 1):
+					G.add_edge(i,j)
 				j += 1
 
 		# Calculamos los datos requeridos
@@ -76,3 +85,6 @@ def redAleatoria(nNodes, p):
 	resultComponentes = componentes / 10
 
 	return resultEnlaces, resultGradoMedio, resultDensity, resultHubDegree, resultAvgDistance, resultClustering, resultComponentes
+
+
+# redAleatoria(500,0.001)
