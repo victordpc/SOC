@@ -1,14 +1,37 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-
+import os
 import sys
 import requests
 import time
 import xml.etree.ElementTree as ET
 
 
-def obtenerUsuario(user):
+def leerUsuarios(fichero):
+
+    # Abrimos el fichero con los usuarios a tratar
+    with open(fichero, 'r') as reader:
+        # Ignoramos la cabecera
+        reader.readline()
+
+        for line in reader:
+            partido = line.split(',')
+            nombreUsuario = partido[0]
+
+            obtenerDatosUsuario(nombreUsuario)
+            calcularAristas()
+
+
+def leerUsuariosError():
+    for nombreUsuario in usersError:
+        obtenerDatosUsuario(nombreUsuario)
+        calcularAristas()
+
+
+# Obtenemos los datos de los juegos valorados por el usuario
+# recibido como parámetro
+def obtenerDatosUsuario(user):
 
     response = requests.get(
         "https://www.boardgamegeek.com/xmlapi/collection/%(usr)s?rated=1" % {'usr': user})
@@ -17,7 +40,7 @@ def obtenerUsuario(user):
     # los datos del usuario pedido, tenemos que volver a realizar la petición
     # pasados X segundos
     while response.status_code == 202:
-        time.sleep(5)
+        time.sleep(segundosEspera)
         response = requests.get(
             "https://www.boardgamegeek.com/xmlapi/collection/%(usr)s?rated=1" % {'usr': user})
 
@@ -32,13 +55,13 @@ def obtenerUsuario(user):
             idJuego = child.attrib['objectid']
 
             # Si no está en la lista de juegos añadidos continuamos
-            if nodos_Juegos.get(idJuego, -1) == -1:
+            if juegos_Tratados.get(idJuego, -1) == -1:
 
                 for datosJuego in child:
 
                     # Nombre
                     if datosJuego.tag == 'name':
-                        nombreJuego = datosJuego.text
+                        nombreJuego = (datosJuego.text).replace(',', ';')
 
                     # Año publicación
                     if datosJuego.tag == 'yearpublished':
@@ -76,7 +99,7 @@ def obtenerUsuario(user):
                                 nota = estadisticas.attrib['value']
                                 valores_Juegos[idJuego] = float(nota)
 
-                nodos_Juegos[idJuego] = nombreJuego
+                juegos_Tratados[idJuego] = nombreJuego
                 juego = []
                 juego.append(idJuego)
                 juego.append(nombreJuego)
@@ -88,14 +111,25 @@ def obtenerUsuario(user):
                 juego.append(playingtime)
                 juego.append(numowned)
                 juego.append(age)
-                datos_Juegos.append(juego)
+
+                guardarNodoFichero(juego)
+
     else:
         usersError.append(user)
 
+# Guardamos un nodo en el fichero de resultados
+def guardarNodoFichero(juego):
+    with open(ficheroDestinoNodosJuegos, "a") as fichero:
+        for dato in juego:
+            fichero.write(str(dato)+', ')
+        fichero.write('\n')
 
+# Calculamos los juegos relacionados entre sí para cada usuario
+# Dos juegos estarán relacionados siempre que un mismo usuario
+# los haya valorado con una nota superior o igual a una variable
 def calcularAristas():
-    while len(valores_Juegos)!=0:
-        juego1, valor1=valores_Juegos.popitem()
+    while len(valores_Juegos) != 0:
+        juego1, valor1 = valores_Juegos.popitem()
 
         if valor1 >= valorParaArista:
             for juego2, valor2 in valores_Juegos.items():
@@ -111,36 +145,95 @@ def calcularAristas():
                         # Si la clave existe ya en el diccionario incrementamos el valor de la arista
                         # si no existe lo añadimos
 
-                        valorClave = aristas_Juegos.get(clave, 0)
-                        aristas_Juegos[clave] = valorClave + 1
+                        valorClave = aristas.get(clave, 0)
+                        aristas[clave] = valorClave + 1
 
-usersError = []
-nodos_Juegos = dict()
-datos_Juegos = []
-datos_Juegos.append(['Id', 'Name', 'Year', 'MinPlayers', 'MaxPlayers',
-                     'MinPlayTime', 'MaxPlayTime', 'PlayingTime', 'NumOwned', 'Age'])
-valores_Juegos = dict()
-aristas_Juegos = dict()
-valorParaArista = 7.0
 
-# Aciones por cada usuario
-obtenerUsuario('masu')
-calcularAristas()
-valores_Juegos.clear()
+def escribirAristas():
+    with open(ficheroDestinoAristasJuegos, "a") as fichero:
 
-# Aciones por cada usuario
-obtenerUsuario('Gellyvs')
-calcularAristas()
-valores_Juegos.clear()
+        for arista, peso in aristas.items():
+            partido = arista.split('-')
+            origen = partido[0]
+            destino = partido[1]
 
-# Aciones por cada usuario
-obtenerUsuario('tnomad')
-calcularAristas()
-valores_Juegos.clear()
+            fichero.write(str(origen)+', '+str(destino)+ ', '+str(peso)+', ' + tipoAristas + '\n')
 
-# Aciones por cada usuario
-obtenerUsuario('Thamoo')
-calcularAristas()
-valores_Juegos.clear()
 
-print('Fin')
+
+# Gstion de los ficheros que se usan
+def configurarFicheros():
+    result=True
+
+    # Aseguramos que exista la carpeta para guardar los ficheros
+    if not os.path.exists(os.path.join(os.getcwd(), carpetaFicheros)):
+        os.makedirs(os.path.join(os.getcwd(), carpetaFicheros))
+
+    # Creamos el fichero para guardar los nodos
+    nodos_Juegos=open(ficheroDestinoNodosJuegos, 'w')
+
+    # Creamos la cabecera del fichero
+    nodos_Juegos.write(
+        'Id, Name, Year, MinPlayers, MaxPlayers, MinPlayTime, MaxPlayTime, PlayingTime, NumOwned, Age,' + '\n')
+    nodos_Juegos.close()
+
+    # Creamos el fichero para guardar las aristas
+    aristas_Juegos=open(ficheroDestinoAristasJuegos, 'w')
+
+    # Creamos la cabecera del fichero
+    aristas_Juegos.write('Source, Target, Weight, Type' + '\n')
+    aristas_Juegos.close()
+
+    # Comprobamos que exista el fichero para leer los usuarios
+    if not os.path.exists(os.path.join(os.getcwd(), ficheroOrigenUsarios)):
+        result=False
+
+    return result
+
+
+def main():
+
+
+    if correcto:
+        # Leemos los usuarios del fichero de origen
+        leerUsuarios(ficheroOrigenUsarios)
+
+        # Reintentamos los usuarios ue han dado error
+        leerUsuariosError()
+
+        escribirAristas()
+    else:
+        print('Error: No existe fichero de entrada con los usuarios')
+
+
+if __name__ == '__main__':
+    # Variables
+    usersError=[]
+
+    juegos_Tratados=dict()
+    valores_Juegos=dict()
+    aristas=dict()
+    # Variables
+
+    # Configuración
+    valorParaArista=7.0
+    segundosEspera=5
+
+    tipoAristas='undirected'
+
+    carpetaFicheros='Files'
+
+    ficheroOrigenUsarios=os.path.join(os.getcwd(), carpetaFicheros, 'usuarios.csv')
+    ficheroUsuariosError=os.path.join(
+        os.getcwd(), carpetaFicheros, 'usuariosError.csv')
+
+    ficheroDestinoNodosJuegos=os.path.join(
+        os.getcwd(), carpetaFicheros, 'NodosJuegos.csv')
+    ficheroDestinoAristasJuegos=os.path.join(
+        os.getcwd(), carpetaFicheros, 'AristasJuegos.csv')
+
+    correcto = configurarFicheros()
+    # Configuración
+
+    main()
+    print('Fin')
