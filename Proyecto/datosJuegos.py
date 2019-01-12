@@ -7,31 +7,34 @@ import requests
 import time
 import xml.etree.ElementTree as ET
 
-
+# Tratamos los usuarios
 def leerUsuarios(fichero):
 
     # Abrimos el fichero con los usuarios a tratar
     with open(fichero, 'r') as reader:
         # Ignoramos la cabecera
         reader.readline()
-
+        nombreUsuarios=[]
         for line in reader:
             partido = line.split(',')
-            nombreUsuario = partido[0]
+            nombreUsuarios.append(partido[0])
 
-            obtenerDatosUsuario(nombreUsuario)
-            calcularAristas()
+    for nombreUsuario in nombreUsuarios:
+        obtenerDatosUsuario(nombreUsuario, True)
+            
+        calcularAristas()
 
 
+# Volvemos a tratar los usuarios que fallaron 
 def leerUsuariosError():
     for nombreUsuario in usersError:
-        obtenerDatosUsuario(nombreUsuario)
+        obtenerDatosUsuario(nombreUsuario, False)
         calcularAristas()
 
 
 # Obtenemos los datos de los juegos valorados por el usuario
 # recibido como parámetro
-def obtenerDatosUsuario(user):
+def obtenerDatosUsuario(user,TratarErrores):
 
     response = requests.get(
         "https://www.boardgamegeek.com/xmlapi/collection/%(usr)s?rated=1" % {'usr': user})
@@ -50,72 +53,88 @@ def obtenerDatosUsuario(user):
 
     if response.status_code == 200:
         root = ET.fromstring(response.text)
-        # Obtenemos los nombres y los ids de los juegos valorados
-        for child in root:
-            idJuego = child.attrib['objectid']
 
-            # Si no está en la lista de juegos añadidos continuamos
-            if juegos_Tratados.get(idJuego, -1) == -1:
+        if root.tag!='errors':
+            # Obtenemos los nombres y los ids de los juegos valorados
+            for child in root:
+                idJuego = child.attrib['objectid']
 
+                # Añadimos el juego y su nota a la lista
                 for datosJuego in child:
-
-                    # Nombre
-                    if datosJuego.tag == 'name':
-                        nombreJuego = (datosJuego.text).replace(',', ';')
-
-                    # Año publicación
-                    if datosJuego.tag == 'yearpublished':
-                        yearJuego = datosJuego.text
-
-                    # Estadisticas
                     if datosJuego.tag == 'stats':
-                        minplayers = -1
-                        maxplayers = -1
-                        minplaytime = -1
-                        maxplaytime = -1
-                        playingtime = -1
-                        numowned = -1
-                        age = -1
-
-                        # Los juegos nos siempre tienen las mismas estdisticas
-                        for atributo in datosJuego.attrib:
-                            if atributo == 'minplayers':
-                                minplayers = datosJuego.attrib['minplayers']
-                            if atributo == 'maxplayers':
-                                maxplayers = datosJuego.attrib['maxplayers']
-                            if atributo == 'minplaytime':
-                                minplaytime = datosJuego.attrib['minplaytime']
-                            if atributo == 'maxplaytime':
-                                maxplaytime = datosJuego.attrib['maxplaytime']
-                            if atributo == 'playingtime':
-                                playingtime = datosJuego.attrib['playingtime']
-                            if atributo == 'numowned':
-                                numowned = datosJuego.attrib['numowned']
-                            if atributo == 'age':
-                                age = datosJuego.attrib['age']
-
                         for estadisticas in datosJuego:
                             if estadisticas.tag == 'rating':
                                 nota = estadisticas.attrib['value']
                                 valores_Juegos[idJuego] = float(nota)
 
-                juegos_Tratados[idJuego] = nombreJuego
-                juego = []
-                juego.append(idJuego)
-                juego.append(nombreJuego)
-                juego.append(yearJuego)
-                juego.append(minplayers)
-                juego.append(maxplayers)
-                juego.append(minplaytime)
-                juego.append(maxplaytime)
-                juego.append(playingtime)
-                juego.append(numowned)
-                juego.append(age)
+                # Si no está en la lista de juegos añadidos continuamos
+                if juegos_Tratados.get(idJuego, -1) == -1:
 
-                guardarNodoFichero(juego)
+                    for datosJuego in child:
 
+                        # Nombre
+                        if datosJuego.tag == 'name':
+                            nombreJuego = (datosJuego.text).replace(',', ';')
+
+                        # Año publicación
+                        if datosJuego.tag == 'yearpublished':
+                            yearJuego = datosJuego.text
+
+                        # Estadisticas
+                        if datosJuego.tag == 'stats':
+                            minplayers = -1
+                            maxplayers = -1
+                            minplaytime = -1
+                            maxplaytime = -1
+                            playingtime = -1
+                            numowned = -1
+                            age = -1
+
+                            # Los juegos nos siempre tienen las mismas estdisticas
+                            for atributo in datosJuego.attrib:
+                                if atributo == 'minplayers':
+                                    minplayers = datosJuego.attrib['minplayers']
+                                if atributo == 'maxplayers':
+                                    maxplayers = datosJuego.attrib['maxplayers']
+                                if atributo == 'minplaytime':
+                                    minplaytime = datosJuego.attrib['minplaytime']
+                                if atributo == 'maxplaytime':
+                                    maxplaytime = datosJuego.attrib['maxplaytime']
+                                if atributo == 'playingtime':
+                                    playingtime = datosJuego.attrib['playingtime']
+                                if atributo == 'numowned':
+                                    numowned = datosJuego.attrib['numowned']
+                                if atributo == 'age':
+                                    age = datosJuego.attrib['age']
+
+                    juegos_Tratados[idJuego] = nombreJuego
+                    juego = []
+                    juego.append(idJuego)
+                    juego.append(nombreJuego)
+                    juego.append(yearJuego)
+                    juego.append(minplayers)
+                    juego.append(maxplayers)
+                    juego.append(minplaytime)
+                    juego.append(maxplaytime)
+                    juego.append(playingtime)
+                    juego.append(numowned)
+                    juego.append(age)
+
+                    guardarNodoFichero(juego)
+        else:
+            tratarUsuarioError(TratarErrores, user)
     else:
+        tratarUsuarioError(TratarErrores, user)
+
+
+# Cuando un usuario falla al obtener los datos los encolamos para tratarlos aparte
+def tratarUsuarioError(TratarErrores,user):
+    if TratarErrores:
         usersError.append(user)
+    else:
+        with open(ficheroUsuariosError, "a") as fichero:
+            fichero.write(str(user)+'\n')
+
 
 # Guardamos un nodo en el fichero de resultados
 def guardarNodoFichero(juego):
@@ -123,6 +142,7 @@ def guardarNodoFichero(juego):
         for dato in juego:
             fichero.write(str(dato)+', ')
         fichero.write('\n')
+
 
 # Calculamos los juegos relacionados entre sí para cada usuario
 # Dos juegos estarán relacionados siempre que un mismo usuario
@@ -149,6 +169,7 @@ def calcularAristas():
                         aristas[clave] = valorClave + 1
 
 
+# Guarda las aristas en un fichero
 def escribirAristas():
     with open(ficheroDestinoAristasJuegos, "a") as fichero:
 
@@ -160,8 +181,7 @@ def escribirAristas():
             fichero.write(str(origen)+', '+str(destino)+ ', '+str(peso)+', ' + tipoAristas + '\n')
 
 
-
-# Gstion de los ficheros que se usan
+# Gestión de los ficheros que se usan
 def configurarFicheros():
     result=True
 
@@ -170,19 +190,21 @@ def configurarFicheros():
         os.makedirs(os.path.join(os.getcwd(), carpetaFicheros))
 
     # Creamos el fichero para guardar los nodos
-    nodos_Juegos=open(ficheroDestinoNodosJuegos, 'w')
-
     # Creamos la cabecera del fichero
-    nodos_Juegos.write(
-        'Id, Name, Year, MinPlayers, MaxPlayers, MinPlayTime, MaxPlayTime, PlayingTime, NumOwned, Age,' + '\n')
-    nodos_Juegos.close()
+    with open(ficheroDestinoNodosJuegos, 'w') as nodos_Juegos:
+        nodos_Juegos.write(
+            'Id, Name, Year, MinPlayers, MaxPlayers, MinPlayTime, MaxPlayTime, PlayingTime, NumOwned, Age,' + '\n')
 
     # Creamos el fichero para guardar las aristas
-    aristas_Juegos=open(ficheroDestinoAristasJuegos, 'w')
-
     # Creamos la cabecera del fichero
-    aristas_Juegos.write('Source, Target, Weight, Type' + '\n')
-    aristas_Juegos.close()
+    with open(ficheroDestinoAristasJuegos, 'w') as aristas_Juegos:
+        aristas_Juegos.write('Source, Target, Weight, Type' + '\n')
+
+    # Creamos el fichero para guardar los usuarios que han dado error
+    if not os.path.exists(ficheroUsuariosError):
+        with open(ficheroUsuariosError, 'w') as usuarios_Error:
+            usuarios_Error.write('UsuariosFallidos' + '\n')
+
 
     # Comprobamos que exista el fichero para leer los usuarios
     if not os.path.exists(os.path.join(os.getcwd(), ficheroOrigenUsarios)):
@@ -191,20 +213,16 @@ def configurarFicheros():
     return result
 
 
+# Main
 def main():
+    # Leemos los usuarios del fichero de origen
+    leerUsuarios(ficheroOrigenUsarios)
 
+    # Reintentamos los usuarios ue han dado error
+    leerUsuariosError()
 
-    if correcto:
-        # Leemos los usuarios del fichero de origen
-        leerUsuarios(ficheroOrigenUsarios)
-
-        # Reintentamos los usuarios ue han dado error
-        leerUsuariosError()
-
-        escribirAristas()
-    else:
-        print('Error: No existe fichero de entrada con los usuarios')
-
+    #Guardamos las aristas
+    escribirAristas()
 
 if __name__ == '__main__':
     # Variables
@@ -235,5 +253,9 @@ if __name__ == '__main__':
     correcto = configurarFicheros()
     # Configuración
 
-    main()
+    if correcto:
+        main()
+    else:
+        print('Error: No existe fichero de entrada con los usuarios')
+
     print('Fin')
