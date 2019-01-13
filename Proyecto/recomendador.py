@@ -13,11 +13,22 @@ def configurarFicheros():
 
     if not os.path.exists(os.path.join(os.getcwd(), carpetaFicheros)):
         result = False
-    elif not os.path.exists(os.path.join(os.getcwd(), ficheroNodos)):
-        result = False
     elif not os.path.exists(os.path.join(os.getcwd(), ficheroAristas)):
         result = False
 
+    # Creamos el fichero para guardar las recomendaciones
+    # Creamos la cabecera del fichero
+    with open(ficheroRecomendador, 'w') as aristas_Juegos:
+        msg = 'Juego,'
+        i = 1
+
+        while i <= respuestas:
+            msg += 'R'+str(i)+', P'+str(i)+', '
+            i += 1
+        msg = msg[:-2]
+        msg += '\n'
+
+        aristas_Juegos.write(msg)
     return result
 
 
@@ -41,169 +52,71 @@ def cargarAristas(grafo):
                            int(arista[1].strip()), weight=float(arista[2].strip()))
 
 
-def cargarJuegos():
-    juegoId = dict()
-    idJuego = dict()
-
-    with open(ficheroNodos, 'r') as reader:
-        # Leemos la cabecera
-        reader.readline()
-
-        for line in reader:
-            juego = line.split(',')
-            juegoId[juego[1].strip().upper()] = int(juego[0].strip())
-            idJuego[int(juego[0].strip())] = juego[1].strip()
-
-    return juegoId, idJuego
-
-
-def recomendador(grafo, juegoId, idJuego, entrada):
+def recomendadorEW(grafo):
     # Diccionario con los pesos de los juegos relacionados con la entrada
-    salida = dict()
-    resultado = []
-    encontrados = []
-    noEncontrados = []
+    resultado = dict()
+    j = 0
+    total = grafo.number_of_nodes()
 
-    for juego in entrada:
-        # Encontramos el juego pedido
+    for juego in grafo.nodes():
+        j += 1
+        print(str(j)+' / '+str(total))
 
-        if juegoId.get(juego.upper(), -1) != -1:
-            encontrados.append(juego)
-            id = juegoId[juego.upper()]
-            # Consultamos para cada juego sus vecinos
-            consultarVecinosJuego(grafo, id, salida)
-        else:
-            noEncontrados.append(juego)
+        salida = dict()
+        resultado[juego] = []
+        # Consultamos para cada juego sus vecinos
+        consultarVecinosJuego(grafo, juego, salida)
 
-    # Eliminamos de la lista las posibles ocurrencias de los juegos de entrada
-    for juego in encontrados:
-        salida.pop(juego, 0)
+        if len(salida) > 0:
+            # Ordenamos los resultados
+            # Obtenemos los X juegos con mayor valoración
+            salidaOrdenada = sorted(salida.keys(), key=lambda x: salida[x])
 
-    if len(salida) > 0:
-        # Ordenamos los resultados
-        # Obtenemos los X juegos con mayor valoración
-        salidaOrdenada = sorted(salida.keys(), key=lambda x: salida[x])
+            i = 0
+            while i < respuestas:
+                elegido = salidaOrdenada.pop()
+                (resultado[juego]).append(elegido)
+                (resultado[juego]).append(salida[elegido])
+                i += 1
 
-        i = 0
-        while i < respuestas:
-            elegido = salidaOrdenada.pop()
-            resultado.append(idJuego[elegido])
-            i += 1
-
-    return resultado, encontrados, noEncontrados
+    return resultado
 
 
-def consultarVecinosJuego(grafo, idJuego, salida):
-    vecinos = grafo.neighbors(idJuego)
+def consultarVecinosJuego(grafo, id, salida):
+    vecinos = grafo.neighbors(id)
 
     # Devolvemos sus vecinos
     for vecino in vecinos:
-        peso = (grafo.get_edge_data(idJuego, vecino))['weight']
+        peso = (grafo.get_edge_data(id, vecino))['weight']
         valor = salida.get(vecino, 0)
         salida[vecino] = peso + valor
 
 
-def mensajeSalida(resultado, encontrados, noEncontrados):
-    msg = ''
-
-    if len(encontrados) > 0:
-        msg = 'Las recomendaciones para '
-
-        if len(encontrados) == 1:
-            msg += 'el juego: '
-        else:
-            msg += 'los juegos: '
-
-        for juego in encontrados:
-            msg += juego+', '
-        msg = msg[:-2]
-
-        if len(resultado) == 1:
-            msg += ' es'
-        else:
-            msg += ' son: '
-
-        for juego in resultado:
-            msg += juego+', '
-        msg = msg[:-2]
-
-        if len(noEncontrados) > 0:
-            msg += '\n\nNo se ha encontrado información para '
-
-            if len(noEncontrados) == 1:
-                msg += 'el juego: '
-            else:
-                msg += 'los juegos: '
-
-            for juego in noEncontrados:
-                msg += juego+', '
-            msg = msg[:-2]
-
-    else:
-        msg = 'No se ha encontrado información para ninguno de los juegos introducidos'
-
-    return msg
-
-
-def mensajeAyuda():
-    msg = 'Recomendador juegotea, un recomendador basado en grafos\n\n'
-    msg += 'Usage:  recomendador [arg ...]|[-h]\n'
-    msg += '\n'
-    msg += '    Introducir los nombres de los juegos separados por un único'
-    msg += ' caracter de espacio, en caso de querer introducir un nombre'
-    msg += ' compuesto por varias palabras introducirlo entre comillas\n'
-    msg += '\n'
-    msg += '    Commands:\n'
-    msg += '      -h    - Muestra la ayuda\n'
+def guardarDatos(datos):
+    with open(ficheroRecomendador, "a") as fichero:
+        for Juego, Recomendaciones in datos.items():
+            fichero.write(str(Juego)+', ')
+            for dato in Recomendaciones:
+                fichero.write(str(dato)+', ')
+            fichero.write('\n')
 
 
 def main():
-    entrada = []
-    error = False
-    continuar = True
-    msg = ''
 
-    # Obtenemos los parámetros de entrada
-    if len(sys.argv) > 1:
-        for argumento in sys.argv:
-            entrada.append(argumento)
-        entrada.remove(entrada[0])
+    # Creamos el grafo
+    G = nx.Graph()
 
-        # Controlamos si quieren mostrar la ayuda
-        if entrada[0] == '-h':
-            continuar = False
-            mensajeAyuda()
+    # Montamos el grafo
+    montarGrafo(G)
 
-    else:
-        error = True
-        msg = 'No se proporcionan argumentos de entrada'
+    # Ejecutamos el algoritmo de recomendación
+    datos = dict()
+    datos = recomendadorEW(G)
 
-    if (not error) & continuar:
-        # Creamos el grafo
-        G = nx.Graph()
+    # Guardamos el resultado de la recomendación
+    guardarDatos(datos)
 
-        # Montamos el grafo
-        montarGrafo(G)
-
-        # Cargamos los juegos
-        juegoId = dict()
-        idJuego = dict()
-        juegoId, idJuego = cargarJuegos()
-
-        # Ejecutamos el algoritmo de recomendación
-        resultado, encontrados, noEncontrados = recomendador(
-            G, juegoId, idJuego, entrada)
-
-        # Montamos el mensaje de salida
-        msg = mensajeSalida(resultado, encontrados, noEncontrados)
-
-    # Si se ha producido un error lo mostramos por pantalla
-    if error:
-        if len(msg) > 0:
-            print(msg)
-        print('Para consultar la ayuda ejecute con la opción -h')
-    else:
-        print(msg)
+    print('Fin')
 
 
 if __name__ == '__main__':
@@ -211,10 +124,10 @@ if __name__ == '__main__':
     respuestas = 5
     # Configuración
     carpetaFicheros = 'Files'
-    ficheroNodos = os.path.join(
-        os.getcwd(), carpetaFicheros, 'NodosJuegos.csv')
     ficheroAristas = os.path.join(
         os.getcwd(), carpetaFicheros, 'AristasJuegos.csv')
+    ficheroRecomendador = os.path.join(
+        os.getcwd(), carpetaFicheros, 'Recomendaciones.csv')
 
     correcto = configurarFicheros()
     # Configuración
