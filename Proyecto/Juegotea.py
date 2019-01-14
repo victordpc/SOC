@@ -71,10 +71,10 @@ def recomendador(recomendaciones, juegoId, idJuego, entrada):
 
         # Encontramos el juego pedido
         if juegoId.get(juego.upper(), -1) != -1:
-            encontrados.append(juego)
             id = juegoId[juego.upper()]
+            encontrados.append(id)
             # Consultamos para cada juego sus recomendaciones
-            consultarRecomendaciones(recomendaciones, id, idJuego, salida)
+            consultarRecomendaciones(recomendaciones, id, salida)
         else:
             noEncontrados.append(juego)
 
@@ -90,13 +90,13 @@ def recomendador(recomendaciones, juegoId, idJuego, entrada):
         i = 0
         while i < respuestas:
             elegido = salidaOrdenada.pop()
-            resultado.append(elegido)
+            resultado.append(idJuego[elegido])
             i += 1
 
     return resultado, encontrados, noEncontrados
 
 
-def consultarRecomendaciones(recomendaciones, id, idJuego, salida):
+def consultarRecomendaciones(recomendaciones, id, salida):
     vecinos = recomendaciones[id]
 
     # Devolvemos sus vecinos
@@ -105,10 +105,10 @@ def consultarRecomendaciones(recomendaciones, id, idJuego, salida):
         idPeso = j*2+1
         valorAcumulado = salida.get(vecinos[idRecomendado], 0)
         peso = vecinos[idPeso]
-        salida[idJuego[vecinos[idRecomendado]]] = peso + valorAcumulado
+        salida[vecinos[idRecomendado]] = peso + valorAcumulado
 
 
-def mensajeSalida(resultado, encontrados, noEncontrados):
+def mensajeSalida(resultado, encontrados, noEncontrados,idJuego):
     msg = '\n'
 
     if len(encontrados) > 0:
@@ -120,7 +120,7 @@ def mensajeSalida(resultado, encontrados, noEncontrados):
             msg += 'los juegos: '
 
         for juego in encontrados:
-            msg += juego+', '
+            msg += idJuego[juego]+', '
         msg = msg[:-2]
 
         if len(resultado) == 1:
@@ -197,7 +197,7 @@ def main():
             recomendaciones, juegoId, idJuego, entrada)
 
         # Montamos el mensaje de salida
-        msg = mensajeSalida(resultado, encontrados, noEncontrados)
+        msg = mensajeSalida(resultado, encontrados, noEncontrados,idJuego)
 
     # Si se ha producido un error lo mostramos por pantalla
     if error:
