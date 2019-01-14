@@ -121,7 +121,7 @@ def main():
 
 if __name__ == '__main__':
     msg = ''
-    respuestas = 5
+    respuestas = 10
     # Configuración
     carpetaFicheros = 'Files'
     ficheroAristas = os.path.join(
