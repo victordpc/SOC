@@ -108,7 +108,7 @@ def consultarRecomendaciones(recomendaciones, id, salida):
         salida[vecinos[idRecomendado]] = peso + valorAcumulado
 
 
-def mensajeSalida(resultado, encontrados, noEncontrados,idJuego):
+def mensajeSalida(resultado, encontrados, noEncontrados, idJuego):
     msg = '\n'
 
     if len(encontrados) > 0:
@@ -197,7 +197,7 @@ def main():
             recomendaciones, juegoId, idJuego, entrada)
 
         # Montamos el mensaje de salida
-        msg = mensajeSalida(resultado, encontrados, noEncontrados,idJuego)
+        msg = mensajeSalida(resultado, encontrados, noEncontrados, idJuego)
 
     # Si se ha producido un error lo mostramos por pantalla
     if error:

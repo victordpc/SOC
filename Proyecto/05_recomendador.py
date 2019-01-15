@@ -125,7 +125,7 @@ if __name__ == '__main__':
     # Configuración
     carpetaFicheros = 'Files'
     ficheroAristas = os.path.join(
-        os.getcwd(), carpetaFicheros, 'AristasJuegos.csv')
+        os.getcwd(), carpetaFicheros, 'AristasGrafo.csv')
     ficheroRecomendador = os.path.join(
         os.getcwd(), carpetaFicheros, 'Recomendaciones.csv')
 
