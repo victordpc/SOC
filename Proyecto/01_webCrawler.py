@@ -64,7 +64,8 @@ def guardarUsuarios(usuarios):
 if __name__ == '__main__':
     # Variables
     # catan azul gloomhaven terraforming-mars scythe rising-sun
-    juegosOrigen = ['13', '230802', '174430', '167791', '169786', '205896']
+    # juegosOrigen = ['13', '230802', '174430', '167791', '169786', '205896']
+    juegosOrigen = ['230802']
     # Variables
     # Configuración
     carpetaFicheros = 'Files'

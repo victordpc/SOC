@@ -8,8 +8,6 @@ import time
 import xml.etree.ElementTree as ET
 
 # Tratamos los usuarios
-
-
 def leerUsuarios(fichero):
 
     # Abrimos el fichero con los usuarios a tratar
@@ -269,7 +267,7 @@ if __name__ == '__main__':
     # Variables
 
     # Configuración
-    valorParaArista = 7.0
+    valorParaArista = 9.0
     segundosEspera = 5
 
     carpetaFicheros = 'Files'

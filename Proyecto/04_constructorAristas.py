@@ -19,8 +19,6 @@ def configurarFicheros():
     return result
 
 # Guarda las aristas en un fichero
-
-
 def escribirAristas(aristas):
     with open(ficheroConstruidoAristsas, "a") as fichero:
 
@@ -35,12 +33,16 @@ def escribirAristas(aristas):
 
 def leerEntrada():
     datos = dict()
+    i = 0
     with open(ficheroAristas, "r") as fichero:
         fichero.readline()
 
         for linea in fichero:
+            print(i)
+            i += 1
             valorClave = datos.get(linea.strip(), 0)
             datos[linea.strip()] = valorClave + 1
+
     return datos
 
 

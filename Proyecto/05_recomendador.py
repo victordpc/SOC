@@ -6,8 +6,6 @@ import sys
 import networkx as nx
 
 # Gestión de los ficheros que se usan
-
-
 def configurarFicheros():
     result = True
 
@@ -56,7 +54,11 @@ def recomendadorEW(grafo):
     # Diccionario con los pesos de los juegos relacionados con la entrada
     resultado = dict()
     j = 0
+    aristas = grafo.number_of_edges()
     total = grafo.number_of_nodes()
+
+    print('Total aristas grafo: '+str(aristas) +
+          ' Total nodos grafo: ' + str(total))
 
     for juego in grafo.nodes():
         j += 1
@@ -73,7 +75,7 @@ def recomendadorEW(grafo):
             salidaOrdenada = sorted(salida.keys(), key=lambda x: salida[x])
 
             i = 0
-            while i < respuestas:
+            while i < respuestas and i < len(salidaOrdenada):
                 elegido = salidaOrdenada.pop()
                 (resultado[juego]).append(elegido)
                 (resultado[juego]).append(salida[elegido])
