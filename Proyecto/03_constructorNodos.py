@@ -20,8 +20,6 @@ def configurarFicheros():
     return result
 
 # Guarda las aristas en un fichero
-
-
 def escribirNodos(aristas):
     with open(ficheroConstruidoNodos, "a") as fichero:
         for juego in aristas.values():
@@ -32,11 +30,11 @@ def leerEntrada():
     datos = dict()
     with open(ficheroNodos, "r") as fichero:
         fichero.readline()
-        
+
         # 217554, Dr. Microbe, 2017, 2, 4, 15, 15, 15, 381, -
         for linea in fichero:
             juego = linea.split(',')[0]
-            datos[int(juego)] =linea
+            datos[int(juego)] = linea
     return datos
 
 
