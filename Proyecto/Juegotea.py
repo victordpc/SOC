@@ -6,8 +6,6 @@ import sys
 import networkx as nx
 
 # Gestión de los ficheros que se usan
-
-
 def configurarFicheros():
     result = True
 
@@ -111,7 +109,7 @@ def consultarRecomendaciones(recomendaciones, id, salida):
 def mensajeSalida(resultado, encontrados, noEncontrados, idJuego):
     msg = '\n'
 
-    if len(encontrados) > 0:
+    if len(encontrados) > 0 and len(resultado) > 0:
         msg += 'Las recomendaciones para '
 
         if len(encontrados) == 1:
@@ -161,6 +159,7 @@ def mensajeAyuda():
     msg += '\n'
     msg += '    Commands:\n'
     msg += '      -h    - Muestra la ayuda\n'
+    return msg
 
 
 def main():
@@ -177,7 +176,7 @@ def main():
         # Controlamos si quieren mostrar la ayuda
         if entrada[0] == '-h':
             continuar = False
-            mensajeAyuda()
+            msg = mensajeAyuda()
     else:
         error = True
         msg = 'No se proporcionan argumentos de entrada'
