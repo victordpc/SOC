@@ -159,6 +159,7 @@ def mensajeAyuda():
     msg += '\n'
     msg += '    Commands:\n'
     msg += '      -h    - Muestra la ayuda\n'
+    return msg
 
 
 def main():
@@ -175,7 +176,7 @@ def main():
         # Controlamos si quieren mostrar la ayuda
         if entrada[0] == '-h':
             continuar = False
-            mensajeAyuda()
+            msg = mensajeAyuda()
     else:
         error = True
         msg = 'No se proporcionan argumentos de entrada'
