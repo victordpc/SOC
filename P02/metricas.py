@@ -38,7 +38,7 @@ def createFiles(model):
 
     if not os.path.exists(result):
         f = open(result, 'w')
-        f.write('Model, Parameter, Density, HubDegree, AvgDistance, Clustering' + '\n')
+        f.write('Model;Parameter;Density;HubDegree;AvgDistance;Clustering' + '\n')
         f.close()
 
     return result
@@ -47,8 +47,8 @@ def createFiles(model):
 # Sacar a fichero los datos para gephi
 def toFiles(file, model, parameter, density, hubDegree, avgDistance, clustering):
     f = open(file, '+a')
-    f.write(str(model) + ',' + str(parameter) + ', ' + str(density) + ', ' + str(hubDegree) +
-            ', ' + str(avgDistance) + ', ' + str(clustering) + '\n')
+    f.write(str(model) + ';' + str(parameter).replace('.',',') + '; ' + str(density).replace('.',',') + ';' + str(hubDegree).replace('.',',') +
+            ';' + str(avgDistance).replace('.',',') + ';' + str(clustering).replace('.',',') + '\n')
     f.close()
 
 
@@ -72,12 +72,14 @@ def readFiles():
 def loadGraph():
     # Load nodes
     G = nx.Graph()
-    G.add_nodes_from(nodes)
+    for node in nodes:
+        node=node.split(',')
+        G.add_nodes_from(node[0].strip())
 
     # Load edges
     for edge in edges:
         edge = edge.split(',')
-        G.add_edge(edge[1], edge[2])
+        G.add_edge((edge[1]).strip(), (edge[2]).strip())
     return G
 
 
@@ -86,18 +88,21 @@ if __name__ == '__main__':
     # argv[2] nodes file name
     # argv[3] edges file name
     # argv[4] network parameter
-    # if len(sys.argv) != 5:
-    #     print("ERROR")
-    #     exit(1)
+    if len(sys.argv) != 5:
+        print("ERROR")
+        exit(1)
 
-    # name = sys.argv[1]
-    # fNodes = sys.argv[2]
-    # fEdges = sys.argv[3]
-    # parameter = sys.argv[4]
-    name='BA' 
-    fNodes='Files/BA_NODOS_M3_T500_1.csv'        
-    fEdges='Files/BA_ARISTAS_M3_T500_1.csv'  
-    parameter='3'
+    name = sys.argv[1]
+    fNodes = sys.argv[2]
+    fEdges = sys.argv[3]
+    parameter = sys.argv[4]
+    
+    # #
+    # name='BA' 
+    # fNodes='Files/BA_NODOS_M4_T500_1.csv'        
+    # fEdges='Files/BA_ARISTAS_M4_T500_1.csv'  
+    # parameter='4'
+    # #
 
     print(name + ' '+ parameter)
 
