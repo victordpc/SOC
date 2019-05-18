@@ -28,7 +28,7 @@ def takeSecond(elem):
 
 
 # Creamos los ficheros de salida
-def createFiles(model):
+def createFile(model):
     if not os.path.exists(os.path.join(os.getcwd(), 'Result')):
         os.makedirs(os.path.join(os.getcwd(), 'Result'))
 
@@ -38,17 +38,17 @@ def createFiles(model):
 
     if not os.path.exists(result):
         f = open(result, 'w')
-        f.write('Model;Parameter;Density;HubDegree;AvgDistance;Clustering' + '\n')
+        f.write('Model;Nodes;Parameter;Density;HubDegree;AvgDistance;Clustering' + '\n')
         f.close()
 
     return result
 
 
 # Sacar a fichero los datos para gephi
-def toFiles(file, model, parameter, density, hubDegree, avgDistance, clustering):
+def toFile(file, model, nNodes, parameter, density, hubDegree, avgDistance, clustering):
     f = open(file, '+a')
-    f.write(str(model) + ';' + str(parameter).replace('.',',') + '; ' + str(density).replace('.',',') + ';' + str(hubDegree).replace('.',',') +
-            ';' + str(avgDistance).replace('.',',') + ';' + str(clustering).replace('.',',') + '\n')
+    f.write(str(model) + ';' + str(nNodes) + ';' + str(parameter).replace('.', ',') + '; ' + str(density).replace('.', ',') + ';' + str(hubDegree).replace('.', ',') +
+            ';' + str(avgDistance).replace('.', ',') + ';' + str(clustering).replace('.', ',') + '\n')
     f.close()
 
 
@@ -73,7 +73,7 @@ def loadGraph():
     # Load nodes
     G = nx.Graph()
     for node in nodes:
-        node=node.split(',')
+        node = node.split(',')
         G.add_nodes_from(node[0].strip())
 
     # Load edges
@@ -85,26 +85,28 @@ def loadGraph():
 
 if __name__ == '__main__':
     # argv[1] network model
-    # argv[2] nodes file name
-    # argv[3] edges file name
-    # argv[4] network parameter
-    if len(sys.argv) != 5:
+    # argv[2] number of nodes
+    # argv[3] nodes file name
+    # argv[4] edges file name
+    # argv[5] network parameter
+    if len(sys.argv) != 6:
         print("ERROR")
         exit(1)
 
     name = sys.argv[1]
-    fNodes = sys.argv[2]
-    fEdges = sys.argv[3]
-    parameter = sys.argv[4]
-    
+    nNodes = sys.argv[2]
+    fNodes = sys.argv[3]
+    fEdges = sys.argv[4]
+    parameter = sys.argv[5]
+
     # #
-    # name='BA' 
-    # fNodes='Files/BA_NODOS_M4_T500_1.csv'        
-    # fEdges='Files/BA_ARISTAS_M4_T500_1.csv'  
+    # name='BA'
+    # fNodes='Files/BA_NODOS_M4_T500_1.csv'
+    # fEdges='Files/BA_ARISTAS_M4_T500_1.csv'
     # parameter='4'
     # #
 
-    print(name + ' '+ parameter)
+    print(name + ' ' + parameter)
 
     if not os.path.exists(os.path.join(os.getcwd(), fNodes)):
         print("Nodes file don't exists")
@@ -120,5 +122,5 @@ if __name__ == '__main__':
 
     density, hubDegree, avgDistance, clustering = calculateMetrics(G)
 
-    file = createFiles(name)
-    toFiles(file, name, parameter, density, hubDegree, avgDistance, clustering)
+    file = createFile(name)
+    toFile(file, name, nNodes, parameter, density, hubDegree, avgDistance, clustering)
