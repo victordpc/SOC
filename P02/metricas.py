@@ -19,7 +19,16 @@ def calculateMetrics(G):
         avgDistance = 'not connected'
     clustering = nx.average_clustering(G)
 
-    return density, hubDegree, avgDistance, clustering
+    L=G.number_of_edges()
+
+    degree=0
+    for node in G:
+        degree+=G.degree(node)
+    K=degree / G.number_of_nodes()
+
+    componentes= nx.number_connected_components(G)
+
+    return density, hubDegree, avgDistance, clustering, L, K, componentes 
 
 
 # take second element for sort
@@ -38,17 +47,25 @@ def createFile(model):
 
     if not os.path.exists(result):
         f = open(result, 'w')
-        f.write('Model;Nodes;Parameter;Density;HubDegree;AvgDistance;Clustering' + '\n')
+        if model.upper()=='BA':
+            f.write('Model;Nodes;Parameter;Density;HubDegree;AvgDistance;Clustering;L' + '\n')
+        else:
+            f.write('Model;Nodes;Parameter;Density;HubDegree;AvgDistance;Clustering;L;K;NumComp' + '\n')
         f.close()
 
     return result
 
 
 # Sacar a fichero los datos para gephi
-def toFile(file, model, nNodes, parameter, density, hubDegree, avgDistance, clustering):
+def toFile(file, model, nNodes, parameter, density, hubDegree, avgDistance, clustering,L,K,componentes):
     f = open(file, '+a')
-    f.write(str(model) + ';' + str(nNodes) + ';' + str(parameter).replace('.', ',') + '; ' + str(density).replace('.', ',') + ';' + str(hubDegree).replace('.', ',') +
-            ';' + str(avgDistance).replace('.', ',') + ';' + str(clustering).replace('.', ',') + '\n')
+    if model.upper()=='BA':
+        f.write(str(model) + ';' + str(nNodes) + ';' + str(parameter).replace('.', ',') + '; ' + str(density).replace('.', ',') + ';' + str(hubDegree).replace('.', ',') +
+        ';' + str(avgDistance).replace('.', ',') + ';' + str(clustering).replace('.', ',')  + ';' + str(L).replace('.', ',') + '\n')
+    else:
+        f.write(str(model) + ';' + str(nNodes) + ';' + str(parameter).replace('.', ',') + '; ' + str(density).replace('.', ',') + ';' + str(hubDegree).replace('.', ',') +
+        ';' + str(avgDistance).replace('.', ',') + ';' + str(clustering).replace('.', ',')  + ';' + str(L).replace('.', ',') + ';' + str(K).replace('.', ',') + ';' + str(componentes).replace('.', ',') + '\n')
+
     f.close()
 
 
@@ -120,7 +137,7 @@ if __name__ == '__main__':
     # Load nodes
     G = loadGraph()
 
-    density, hubDegree, avgDistance, clustering = calculateMetrics(G)
+    density, hubDegree, avgDistance, clustering, L, K, componentes = calculateMetrics(G)
 
     file = createFile(name)
-    toFile(file, name, nNodes, parameter, density, hubDegree, avgDistance, clustering)
+    toFile(file, name, nNodes, parameter, density, hubDegree, avgDistance, clustering, L, K, componentes)
