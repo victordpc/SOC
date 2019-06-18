@@ -5,7 +5,6 @@ import os
 import sys
 from random import randint
 
-
 # Crea un grafo completo con k=m
 def initialGraph(m, nodos, aristas):
     for i in range(m+1):
@@ -13,7 +12,6 @@ def initialGraph(m, nodos, aristas):
         for j in range(m+1):
             if (j > i):
                 aristas.append(str(i) + '-' + str(j))
-
 
 # Calculamos los enlaces que se van a crear
 def calculateEdges(m, sumaGrados, nodos, nuevosEnlaces):
@@ -33,13 +31,11 @@ def calculateEdges(m, sumaGrados, nodos, nuevosEnlaces):
                     l += 1
                 break
 
-
 # Añadimos nuevos enlaces
 def addNewEdges(nuevosEnlaces, aristas, nuevoNodo, nodos):
     for _enlace in nuevosEnlaces:
         aristas.append(str(_enlace) + '-' + str(nuevoNodo))
         nodos[_enlace] += 1
-
 
 # Creamos los ficheros de salida
 def createFiles(m, N, i):
@@ -53,7 +49,6 @@ def createFiles(m, N, i):
         os.getcwd(), 'Files',
         'BA_ARISTAS' + '_M' + str(m) + '_T' + str(N) + '_' + str(i) + '.csv')
     return FICHERONODOS, FICHEROARISTAS
-
 
 # Sacar a fichero los datos para gephi
 def toFiles(FICHERONODOS, nodos, FICHEROARISTAS, aristas):
@@ -78,7 +73,6 @@ def toFiles(FICHERONODOS, nodos, FICHEROARISTAS, aristas):
         i += 1
     f.close()
 
-
 # Main
 if __name__ == '__main__':
     # arg[1] -> m
@@ -98,7 +92,7 @@ if __name__ == '__main__':
     # m=4
     # N=500
     m0 = m+1
-    t = N-m0
+    t = N
 
     nodos = []
     aristas = []
